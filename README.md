@@ -10,13 +10,11 @@ Commands
 noclip
 cds
 tpway
-
 vehicle (model) ( 1 = inside | 2 = outside )
 delete
 fix
 tunning
 mod
-
 ```
 
 ## Installation
@@ -34,6 +32,5 @@ add_principal identifier.ip:127.0.0.1 group.admin
 ## Future Release
 
 Add Panel for Ban, Whitelist, etc.
+
 Add more commands for development. 
-
-
