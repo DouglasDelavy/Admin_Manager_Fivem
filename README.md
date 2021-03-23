@@ -10,7 +10,7 @@ Commands
 noclip
 cds
 tpway
-vehicle (model) ( 1 = inside | 2 = outside )
+vehicle (model) ( 0 or none = outside | 1 = inside )
 delete
 fix
 tunning
