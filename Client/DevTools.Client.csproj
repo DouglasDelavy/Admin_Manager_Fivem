@@ -1,0 +1,11 @@
+﻿<Project Sdk="CitizenFX.Sdk.Client/0.2.3">
+    <PropertyGroup>
+      <DebugType>portable</DebugType>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="../Shared/**/*.cs" />
+    </ItemGroup>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="xcopy /y /d &quot;$(TargetPath)&quot; &quot;$(SolutionDir)\..\..\GIT\FivemServer\resources\MyDevtools\Client\&quot;&#xD;&#xA;xcopy /y /d /q /c &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;$(SolutionDir)\..\..\GIT\FivemServer\resources\MyDevtools\Client\&quot;" />
+    </Target>
+</Project>

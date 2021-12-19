@@ -2,12 +2,10 @@
 using CitizenFX.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 
-namespace Admin.Manager
+namespace DevTools.Client
 {
     public class Manager : BaseScript
     {
@@ -36,7 +34,8 @@ namespace Admin.Manager
 		public Manager()
         {
             vehicleApi = new VehicleApi();
-            playerApi = new PlayerApi();
+            playerApi = new PlayerApi(); 
+            Logger.LogDebug($"ClientMain Successfully Initialized.");
         }
 
         private bool isAceAllowed { get; set; } = true;

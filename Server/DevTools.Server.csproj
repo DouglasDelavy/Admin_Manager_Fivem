@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>netstandard2.0</TargetFramework>
+      <DebugType>portable</DebugType>
+      <TargetName>$(AssemblyName).net</TargetName>
+      <DefineConstants>SERVER</DefineConstants>
+    </PropertyGroup>
+  
+    <ItemGroup>
+      <PackageReference Include="CitizenFX.Core.Server" Version="1.0.*" />
+  
+      <Compile Include="../Shared/**/*.cs" />
+    </ItemGroup>
+  
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="xcopy /y /d &quot;$(TargetPath)&quot; &quot;$(SolutionDir)\..\..\GIT\FivemServer\resources\MyDevtools\Server\&quot;&#xD;&#xA;xcopy /y /d /q /c &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;$(SolutionDir)\..\..\GIT\FivemServer\resources\MyDevtools\Server\&quot;" />
+    </Target>
+</Project>
+  

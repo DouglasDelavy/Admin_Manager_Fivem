@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminManager.Client", "Admin.Manager\AdminManager.Client.csproj", "{08026EF1-8C2D-4035-A4A5-7347FB959FD4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTools.Client", "Client\DevTools.Client.csproj", "{08026EF1-8C2D-4035-A4A5-7347FB959FD4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "admin_manager", "admin_manager", "{21A2282D-C00B-43D5-B071-48E7FBEEBE95}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminManager.Server", "AdminManager.Server\AdminManager.Server.csproj", "{71B58B45-BEF0-4501-AA17-ABC5934B8F9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTools.Server", "Server\DevTools.Server.csproj", "{71B58B45-BEF0-4501-AA17-ABC5934B8F9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,10 +24,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{08026EF1-8C2D-4035-A4A5-7347FB959FD4} = {21A2282D-C00B-43D5-B071-48E7FBEEBE95}
-		{71B58B45-BEF0-4501-AA17-ABC5934B8F9E} = {21A2282D-C00B-43D5-B071-48E7FBEEBE95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9ACC45C-4E85-40F6-A05A-380D8CEC60C8}
