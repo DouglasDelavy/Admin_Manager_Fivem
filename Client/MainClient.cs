@@ -2,14 +2,20 @@
 using CitizenFX.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using CitizenFX.Core.Native;
+using DevTools.Client.Modules;
 using static CitizenFX.Core.Native.API;
 
 namespace DevTools.Client
 {
-    public class Manager : BaseScript
+    public class MainClient : BaseScript
     {
-        public VehicleApi vehicleApi { get; }
+		public bool IsAceAllowed { get; private set; }
+
+
+		public VehicleApi vehicleApi { get; }
         public PlayerApi playerApi { get; }
 
 		private const float MinY = -89f, MaxY = 89f;
@@ -31,60 +37,86 @@ namespace DevTools.Client
 			Control.Duck
 		};
 
-		public Manager()
+		public MainClient()
         {
-            vehicleApi = new VehicleApi();
-            playerApi = new PlayerApi(); 
-            Logger.LogDebug($"ClientMain Successfully Initialized.");
+			VehicleModule.Init(this);
+			
+			AddEventHandler("playerSpawned", new Action(OnSpawn));
+            Logger.LogDebug($"Client successfully initialized all Modules.");
         }
 
-        private bool isAceAllowed { get; set; } = true;
-
-        [EventHandler("admin_manager:setAcePermission")]
-        private void SetAcePermission(bool value)
+        public void AddTick(Func<Task> tick)
         {
-            isAceAllowed = value;
+            Tick += tick;
         }
 
-        [Command("vehicle")]
-        public async void CreateVehicle(int source, List<object> args, string raw)
+        public void RemoveTick(Func<Task> tick)
         {
-            if (!isAceAllowed)
-                return;
+            Tick -= tick;
+        }
 
-            if (IsPedInAnyVehicle(PlayerPedId(), false))
-                vehicleApi.DeleteVehicleAsync(GetVehiclePedIsIn(PlayerPedId(), false));
+        public void AddEventHandler(string eventName, Delegate action)
+        {
+			EventHandlers.Add(eventName, action);
+        }
 
-            if (args.Count > 0)
+        public bool RemoveEventHandler(string eventName)
+        {
+            return EventHandlers.Remove(eventName);
+        }
+
+        public string GetCurrentResourceName()
+        {
+            return API.GetCurrentResourceName();
+        }
+
+        public void AddCommand(string commandName, Action<string[]> method, bool isRestricted = false)
+        {
+            RegisterCommand(commandName, new Action<int, List<object>, string>((source, args, rawCommand) =>
             {
-                var vehModel = args[0].ToString();
-                var pedPosition = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 5f, 0f);
-
-                var vehicle = await vehicleApi.SpawnVehicle(vehModel, new Vector4(pedPosition.X, pedPosition.Y, pedPosition.Z, GetEntityHeading(PlayerPedId())), "Dev", locked: false);
-
-                if (args.Count > 1 && !string.IsNullOrEmpty(args[1].ToString()))
-                    SetPedIntoVehicle(PlayerPedId(), vehicle, -1);
-
-                Debug.WriteLine("Now Spawn One Vehicle!");
-            }
+				method?.Invoke(args.Select(a => (string)a).ToArray() );
+            }), isRestricted);
         }
 
-        [Command("delete")]
-        public async void DeleteVehicle(int source, List<object> args, string raw)
+        #region Events
+
+        private void OnSpawn()
         {
-            if (!isAceAllowed)
-                return;
-
-            if (vehicleApi.GetVehicle(5f) > 0)
-                vehicleApi.DeleteVehicleAsync(vehicleApi.GetVehicle(5f));
+			TriggerServerEvent("DevTools.OnSpawn");
         }
+
+        #endregion
+		
+        //[Command("vehicle")]
+        //public async void CreateVehicle(int source, List<object> args, string raw)
+        //{
+        //    if (IsPedInAnyVehicle(PlayerPedId(), false))
+        //        vehicleApi.DeleteVehicleAsync(GetVehiclePedIsIn(PlayerPedId(), false));
+
+        //    if (args.Count > 0)
+        //    {
+        //        var vehModel = args[0].ToString();
+        //        var pedPosition = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0f, 5f, 0f);
+
+        //        var vehicle = await vehicleApi.SpawnVehicle(vehModel, new Vector4(pedPosition.X, pedPosition.Y, pedPosition.Z, GetEntityHeading(PlayerPedId())), "Dev", locked: false);
+
+        //        if (args.Count > 1 && !string.IsNullOrEmpty(args[1].ToString()))
+        //            SetPedIntoVehicle(PlayerPedId(), vehicle, -1);
+
+        //        Debug.WriteLine("Now Spawn One Vehicle!");
+        //    }
+        //}
+
+        //[Command("delete")]
+        //public async void DeleteVehicle(int source, List<object> args, string raw)
+        //{
+        //    if (vehicleApi.GetVehicle(5f) > 0)
+        //        vehicleApi.DeleteVehicleAsync(vehicleApi.GetVehicle(5f));
+        //}
 
         [Command("fix")]
         public async void FixVehicle(int source, List<object> args, string raw)
         {
-            if (!isAceAllowed)
-                return;
-
             if (IsPedInAnyVehicle(PlayerPedId(), false))
                 vehicleApi.FixVehicleAsync(GetVehiclePedIsIn(PlayerPedId(), false));
         }
@@ -92,9 +124,6 @@ namespace DevTools.Client
         [Command("tunning")]
         public async void TunningVehicle(int source, List<object> args, string raw)
         {
-            if (!isAceAllowed)
-                return;
-
             if (IsPedInAnyVehicle(PlayerPedId(), false))
                 vehicleApi.TunningVehicleAsync(GetVehiclePedIsIn(PlayerPedId(), false));
         }
@@ -102,9 +131,6 @@ namespace DevTools.Client
         [Command("mod")]
         public async void ModVehicle(int source, List<object> args, string raw)
         {
-            if (!isAceAllowed)
-                return;
-
             if (IsPedInAnyVehicle(PlayerPedId(), false))
             {
                 var vehicle = vehicleApi.GetVehicle(5f);
@@ -122,17 +148,12 @@ namespace DevTools.Client
         [Command("tpway")]
         public async Task TeleportToWayPoint(int source, List<object> args, string raw)
         {
-            if (!isAceAllowed)
-                return;
-
             playerApi.TeleportWayPoint();
         }
+
         [Command("cds")]
         public void GetCoor(int source, List<object> args, string raw)
         {
-            if (!isAceAllowed)
-                return;
-
             var pedCoords = GetEntityCoords(PlayerPedId(), true);
             Debug.WriteLine($"^1[Admin_Manager.PlayerManager]^7: {pedCoords}");
         }
@@ -140,9 +161,6 @@ namespace DevTools.Client
         [Command("noclip")]
         public void EnableNoClip(int source, List<object> args, string raw)
         {
-            if (!isAceAllowed)
-                return;
-
 			IsEnabled = !IsEnabled;
 		}
 
